@@ -2,13 +2,14 @@ use axum::response::IntoResponse;
 use axum::response::Response;
 use axum::routing::get;
 use axum::{Json, Router};
+use bytes::Bytes;
 use chrono::Utc;
 use serde::Serialize;
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 
 #[derive(Serialize)]
-pub struct Pong {
+struct Pong {
     message: String,
     timestamp: u64,
 }
@@ -32,6 +33,7 @@ impl IntoResponse for Pong {
 async fn main() {
     let app: Router = Router::new()
         .route("/ping", get(ping_handler))
+        .route("/download", get(download_speed_handler))
         .layer(CorsLayer::new().allow_origin(Any));
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     println!("Listening on {}...", addr);
@@ -43,4 +45,9 @@ async fn main() {
 
 async fn ping_handler() -> Pong {
     return Pong::new();
+}
+
+async fn download_speed_handler() -> impl IntoResponse {
+    let body: Bytes = Bytes::from(vec![0u8; 10 * 1024 * 1024]);
+    return body;
 }
