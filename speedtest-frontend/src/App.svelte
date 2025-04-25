@@ -1,4 +1,6 @@
 <script lang="ts">
+  import DownloadTest from "./components/DownloadTest.svelte";
+
   let pingMs: number | null = null;
 
   async function getPing() {
@@ -21,6 +23,7 @@
   {#if pingMs !== null}
     <p>Your ping is: {pingMs.toFixed(2)} ms</p>
   {/if}
+  <DownloadTest />
 </main>
 
 <style lang="postcss">
