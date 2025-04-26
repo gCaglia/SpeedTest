@@ -1,6 +1,7 @@
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::response::Response;
-use axum::routing::get;
+use axum::routing::{get, post};
 use axum::{Json, Router};
 use bytes::Bytes;
 use chrono::Utc;
@@ -34,6 +35,7 @@ async fn main() {
     let app: Router = Router::new()
         .route("/ping", get(ping_handler))
         .route("/download", get(download_speed_handler))
+        .route("/upload", post(upload_speed_handler))
         .layer(CorsLayer::new().allow_origin(Any));
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     println!("Listening on {}...", addr);
@@ -50,4 +52,9 @@ async fn ping_handler() -> Pong {
 async fn download_speed_handler() -> impl IntoResponse {
     let body: Bytes = Bytes::from(vec![0u8; 10 * 1024 * 1024]);
     return body;
+}
+
+async fn upload_speed_handler(body: Bytes) -> impl IntoResponse {
+    let _ = body.len();
+    StatusCode::OK
 }
