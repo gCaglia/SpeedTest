@@ -1,3 +1,6 @@
+use axum::body::Body;
+use axum::extract::DefaultBodyLimit;
+use axum::http::header;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::response::Response;
@@ -8,6 +11,9 @@ use chrono::Utc;
 use serde::Serialize;
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
+
+const PAYLOAD_SIZE: usize = 10 * 1024 * 1024; // 10MBs
+const REQUEST_BODY_LIMIT: usize = 100 * 1024 * 1024;
 
 #[derive(Serialize)]
 struct Pong {
@@ -32,11 +38,16 @@ impl IntoResponse for Pong {
 
 #[tokio::main]
 async fn main() {
+    let cors_layer: CorsLayer = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers([header::CONTENT_TYPE]);
     let app: Router = Router::new()
         .route("/ping", get(ping_handler))
         .route("/download", get(download_speed_handler))
         .route("/upload", post(upload_speed_handler))
-        .layer(CorsLayer::new().allow_origin(Any));
+        .layer(cors_layer)
+        .layer(DefaultBodyLimit::max(REQUEST_BODY_LIMIT));
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     println!("Listening on {}...", addr);
     axum_server::bind(addr)
@@ -49,9 +60,15 @@ async fn ping_handler() -> Pong {
     return Pong::new();
 }
 
-async fn download_speed_handler() -> impl IntoResponse {
-    let body: Bytes = Bytes::from(vec![0u8; 10 * 1024 * 1024]);
-    return body;
+async fn download_speed_handler() -> Response<Body> {
+    let body: Bytes = Bytes::from(vec![0u8; PAYLOAD_SIZE]);
+
+    Response::builder()
+        .status(StatusCode::OK)
+        .header(header::CONTENT_LENGTH, &PAYLOAD_SIZE.to_string())
+        .header(header::CONTENT_TYPE, "application/octet-stream")
+        .body(Body::from(body))
+        .expect("Failed to build response!")
 }
 
 async fn upload_speed_handler(body: Bytes) -> impl IntoResponse {
