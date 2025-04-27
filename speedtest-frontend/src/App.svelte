@@ -1,29 +1,41 @@
 <script lang="ts">
-  import DownloadTest from "./components/DownloadTest.svelte";
+  import { SpeedTest } from "./components/SpeedTest";
+  import { Api } from "./components/api";
 
-  let pingMs: number | null = null;
+  let api = new Api("http://localhost:3000");
+  let speedTest = new SpeedTest(api);
+
+  let ping: number | null = null;
+  let downloadSpeed: number | null = null;
+  let uploadSpeed: number | null = null;
 
   async function getPing() {
-    const start = performance.now();
+    ping = await speedTest.ping();
+  }
 
-    try {
-      await fetch("http://localhost:3000/ping");
-      const end = performance.now();
-      pingMs = end - start;
-    } catch (error) {
-      pingMs = null;
-      console.log("Ping failed", error);
-    }
+  async function getDownloadSpeed() {
+    downloadSpeed = await speedTest.download();
+  }
+
+  async function getUploadSpeed() {
+    uploadSpeed = await speedTest.upload()
   }
 </script>
 
 <main>
   <h1>Welcome to the Private SpeedTest!</h1>
-  <button on:click={getPing}> Test Ping </button>
-  {#if pingMs !== null}
-    <p>Your ping is: {pingMs.toFixed(2)} ms</p>
+  <button on:click={getPing}>Test Ping </button>
+  {#if ping !== null}
+    <p>Your ping is: {ping.toFixed(2)} ms</p>
   {/if}
-  <DownloadTest />
+  <button on:click={getDownloadSpeed}>Test Download Speed</button>
+  {#if downloadSpeed !== null}
+    <p>Your download speed is: {downloadSpeed.toFixed(2)} MB/s.</p>
+  {/if}
+  <button on:click={getUploadSpeed}>Test Upload Speed</button>
+  {#if uploadSpeed !== null}
+    <p>Your upload speed is: {uploadSpeed.toFixed(2)} MB/s.</p>
+  {/if}
 </main>
 
 <style lang="postcss">
