@@ -1,8 +1,8 @@
 <script lang="ts">
   import { SpeedTest } from "./components/SpeedTest";
   import { Api } from "./components/api";
-  import "./components/SpeedSection.svelte"
-    import SpeedSection from "./components/SpeedSection.svelte";
+  import SpeedSection from "./components/SpeedSection.svelte";
+  import PingBox from "./components/PingBox.svelte";
 
   let api = new Api("http://localhost:3000");
   let speedTest = new SpeedTest(api);
@@ -44,8 +44,11 @@
   <div class="heading-box">
     <h1> Welcome to the Private SpeedTest!</h1>
   </div>
-  <SpeedSection ></SpeedSection>
-  <SpeedSection ></SpeedSection>
+  <div class="results">
+    <SpeedSection bind:results = {downloadSpeed}></SpeedSection>
+    <SpeedSection bind:results = {uploadSpeed}></SpeedSection>
+    <PingBox bind:results = {ping}></PingBox>
+  </div>
 </main>
 
 <style lang="postcss">
@@ -55,5 +58,12 @@
     justify-content: flex-start;
     align-items: center;
     width: 100%
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 </style>

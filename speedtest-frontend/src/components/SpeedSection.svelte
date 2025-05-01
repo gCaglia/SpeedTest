@@ -1,14 +1,29 @@
 <script lang="ts">
-    async function getStats() {
-        let results = {
-            "last": 1.1,
-            "avg": 5.1,
-            "max": 3.1
-        }
-        return results
-    }
-    let statsPromise = getStats();
+    export let results: number[] | null;
+    const keys: string[] = ["Last", "Average", "Peak"];
+    let statsPromise: Promise<Record<string, number>>;
 
+    async function getAverage(results: number[]): Promise<number> {
+        if (Number.length === 0) {
+            return NaN
+        }
+        const sum = results.reduce((a, b) => a + b, 0)
+        return sum / results.length
+    }
+
+    async function calcStats() {
+        let stats: Record<string, number> = {};
+        if (results === null) {
+            return stats
+        }
+        stats["Last"] = results[results.length]
+        stats["Average"] = await getAverage(results)
+        stats["Peak"] = Math.max(...results)
+
+        return stats
+    }
+
+    $: statsPromise = calcStats();
 </script>
 
 <style lang="postcss">
@@ -19,6 +34,22 @@
         align-items: center;
         margin-top: 5rem
     }
+    .stats {
+        display: flex;
+        margin: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+        background-color: antiquewhite;
+        color: black;
+        padding: 1rem;
+    }
+    .stat-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .stat-result {
+        font-size: 1.1rem;
+    }
 
 </style>
 
@@ -28,15 +59,20 @@
             Download Graph (Placeholder)
         </div>
         <div class="stats">
-            {#await statsPromise}
-            <p>Loading Stats...</p>
-            {:then stats}
-            {#each Object.entries(stats) as [key, value]}
+            {#each keys as key}
             <div class="stat-box">
-                {key}: {value}
+                <div class="stat-header">{key}</div>
+                {#await statsPromise}
+                    <div class="stat-result"> - </div>
+                {:then stats}
+                    {#if stats.hasOwnProperty(key)}
+                        <div class="stat-result"> {stats[key]} MB/s </div>
+                    {:else}
+                        <div class="stat-result"> {stats[key]} - </div>
+                    {/if}
+                {/await}
             </div>
             {/each}
-            {/await}
         </div>
     </div>
 
