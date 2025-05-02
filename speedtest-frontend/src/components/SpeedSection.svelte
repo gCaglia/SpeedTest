@@ -13,17 +13,18 @@
 
     async function calcStats() {
         let stats: Record<string, number> = {};
-        if (results === null) {
-            return stats
-        }
-        stats["Last"] = results[results.length]
+        stats["Last"] = results[results.length - 1]
         stats["Average"] = await getAverage(results)
         stats["Peak"] = Math.max(...results)
 
         return stats
     }
 
-    $: statsPromise = calcStats();
+    $: if (results !== null) {
+        statsPromise = calcStats();
+        } else {
+            statsPromise = (async () => {return {}})();
+        }
 </script>
 
 <style lang="postcss">
@@ -32,7 +33,7 @@
         gap: 2rem
         margin-bottom: 2rem;
         align-items: center;
-        margin-top: 5rem
+        margin-top: 5rem;
     }
     .stats {
         display: flex;
@@ -41,6 +42,7 @@
         gap: 1rem;
         background-color: antiquewhite;
         color: black;
+        border-radius: 15px;
         padding: 1rem;
     }
     .stat-header {
@@ -56,7 +58,7 @@
 <main>
     <div class="speed-section">
         <div class="graph">
-            Download Graph (Placeholder)
+            Graph (Placeholder)
         </div>
         <div class="stats">
             {#each keys as key}
@@ -66,7 +68,7 @@
                     <div class="stat-result"> - </div>
                 {:then stats}
                     {#if stats.hasOwnProperty(key)}
-                        <div class="stat-result"> {stats[key]} MB/s </div>
+                        <div class="stat-result"> {stats[key].toFixed(2)} MB/s </div>
                     {:else}
                         <div class="stat-result"> {stats[key]} - </div>
                     {/if}

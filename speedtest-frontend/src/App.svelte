@@ -10,32 +10,40 @@
   let ping: number[] | null = null;
   let downloadSpeed: number[] | null = null;
   let uploadSpeed: number[] | null = null;
+  
+  const numChecks: number = 30;
 
   async function getPing() {
-    ping = [];
-    for (let i = 0; i < 30; i++) {
-      ping.push(await speedTest.ping());
+    let results: number[] = [];
+    for (let i = 0; i < numChecks; i++) {
+      results.push(await speedTest.ping());
     }
+    return results
   }
 
   async function getDownloadSpeed() {
-    downloadSpeed = [];
-    for (let i = 0; i < 30; i++) {
-      downloadSpeed.push(await speedTest.download());
+    let results: number[] = [];
+    for (let i = 0; i < numChecks; i++) {
+      results.push(await speedTest.download());
     }
+    return results
   }
 
   async function getUploadSpeed() {
-    uploadSpeed = [];
-    for (let i = 0; i < 30; i++) {
-      uploadSpeed.push(await speedTest.upload());
+    let results: number[] = [];
+    for (let i = 0; i < numChecks; i++) {
+      results.push(await speedTest.upload());
     }
+    return results
   }
 
   async function runTests() {
-    await getPing();
-    await getDownloadSpeed();
-    await getUploadSpeed();
+    ping = null;
+    downloadSpeed = null;
+    uploadSpeed = null;
+    ping = await getPing();
+    downloadSpeed = await getDownloadSpeed();
+    uploadSpeed = await getUploadSpeed();
   }
 
 </script>
@@ -47,8 +55,13 @@
   <div class="results">
     <SpeedSection bind:results = {downloadSpeed}></SpeedSection>
     <SpeedSection bind:results = {uploadSpeed}></SpeedSection>
+  </div>
+  <div class="results">
     <PingBox bind:results = {ping}></PingBox>
   </div>
+  <button class="test-button" on:click={runTests}>
+    Run Test
+  </button>
 </main>
 
 <style lang="postcss">
@@ -62,7 +75,7 @@
 
   .results {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
   }

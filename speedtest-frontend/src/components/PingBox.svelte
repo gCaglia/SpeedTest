@@ -1,15 +1,18 @@
 <script lang="ts">
     export let results: number[] | null
+    let meanPing: Promise<number>;
 
     async function getMean(): Promise<number> {
-        if (results.length === 0 ) {
+        if (results.length === 0) {
             return NaN
         }
         const sum = results.reduce((a, b) => a + b, 0)
         return sum  / results.length;
     }
 
-    let meanPing: Promise<number> = getMean();
+    $: if (results !== null) {
+        meanPing = getMean()
+    }
 </script>
 
 <style lang="postcss">
@@ -19,6 +22,8 @@
         justify-content: center;
         margin: 10rem;
         flex-direction: column;
+        margin-bottom: 5rem;
+        margin-top: 5rem;
     }
 
     .ping-header {
@@ -30,7 +35,7 @@
     .ping-result {
         font-size: 1.5em;
         background-color: rgb(79, 92, 92);
-        padding: 1rem
+        padding: 1rem;
     }
 </style>
 
@@ -41,13 +46,14 @@
         </div>
         <div class="ping-result">
             {#if results === null}
-            -
-            {/if}
+                -
+            {:else}
             {#await meanPing}
-            Loading ping...
+                Loading ping...
             {:then ping}
-            {{ping}} ms
+                {ping.toFixed(2)} ms
             {/await}
+            {/if}
         </div>
     </div>
 </main>
