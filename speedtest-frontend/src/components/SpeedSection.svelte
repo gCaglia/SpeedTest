@@ -4,21 +4,21 @@
     export let results: number[] | null;
     export let label: string;
     const keys: string[] = ["Last", "Average", "Peak"];
-    let statsPromise: Promise<Record<string, number>>;
+    let statsPromise: Promise<Record<string, number | string>>;
 
-    async function getAverage(results: number[]): Promise<number> {
-        if (Number.length === 0) {
-            return NaN
+    async function getAverage(results: number[]): Promise<number | string>  {
+        if (results.length === 0) {
+            return "-"
         }
         const sum = results.reduce((a, b) => a + b, 0)
         return sum / results.length
     }
 
     async function calcStats() {
-        let stats: Record<string, number> = {};
+        let stats: Record<string, number | string> = {};
         stats["Last"] = results[results.length - 1]
         stats["Average"] = await getAverage(results)
-        stats["Peak"] = Math.max(...results)
+        stats["Peak"] = results.length > 0 ? Math.max(...results) : "-"
 
         return stats
     }
