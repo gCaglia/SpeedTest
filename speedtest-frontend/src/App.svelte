@@ -38,9 +38,9 @@
   }
 
   async function runTests() {
-    ping = null;
-    downloadSpeed = null;
-    uploadSpeed = null;
+    ping = [];
+    downloadSpeed = [];
+    uploadSpeed = [];
     ping = await getPing();
     downloadSpeed = await getDownloadSpeed();
     uploadSpeed = await getUploadSpeed();
