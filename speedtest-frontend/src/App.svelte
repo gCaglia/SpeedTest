@@ -53,8 +53,8 @@
     <h1> Welcome to the Private SpeedTest!</h1>
   </div>
   <div class="results">
-    <SpeedSection bind:results = {downloadSpeed}></SpeedSection>
-    <SpeedSection bind:results = {uploadSpeed}></SpeedSection>
+    <SpeedSection bind:results = {downloadSpeed} label = "Download Speed (MB/s)"></SpeedSection>
+    <SpeedSection bind:results = {uploadSpeed} label = "Upload Speed (MB/s)"></SpeedSection>
   </div>
   <div class="results">
     <PingBox bind:results = {ping}></PingBox>

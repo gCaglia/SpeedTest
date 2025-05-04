@@ -1,5 +1,8 @@
 <script lang="ts">
+    import ChartResults from "./ChartResults.svelte"
+
     export let results: number[] | null;
+    export let label: string;
     const keys: string[] = ["Last", "Average", "Peak"];
     let statsPromise: Promise<Record<string, number>>;
 
@@ -52,13 +55,17 @@
     .stat-result {
         font-size: 1.1rem;
     }
+    .graph {
+        height: 12.5rem;
+        width: 25rem;
+    }
 
 </style>
 
 <main>
     <div class="speed-section">
         <div class="graph">
-            Graph (Placeholder)
+            <ChartResults bind:results={results} bind:label={label}/>
         </div>
         <div class="stats">
             {#each keys as key}
