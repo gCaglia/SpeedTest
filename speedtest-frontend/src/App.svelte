@@ -70,6 +70,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    justify-content: center;
     width: 100%
   }
 
