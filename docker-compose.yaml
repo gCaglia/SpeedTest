@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./speedtest-backend
+    image: speedtest-backend:latest
+    container_name: backend
+    ports:
+      - "3000:3000"
+    networks:
+      - speedtest-network
+    mem_limit: 1G
+    cpus: 1
+
+
+  frontend:
+    build:
+      context: ./speedtest-frontend
+    image: speedtest-frontend:latest
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - speedtest-network
+    depends_on:
+      - backend
+    mem_limit: 0.5G
+    cpus: 1
+
+
+networks:
+  speedtest-network:
+    driver: bridge
