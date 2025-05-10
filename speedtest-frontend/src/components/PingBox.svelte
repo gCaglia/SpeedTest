@@ -51,7 +51,11 @@
             {#await meanPing}
                 Loading ping...
             {:then ping}
-                {ping.toFixed(2)} ms
+                {#if Number.isNaN(ping)}
+                    Loading ping...
+                {:else}
+                    {ping.toFixed(2)} ms
+                {/if}
             {/await}
             {/if}
         </div>

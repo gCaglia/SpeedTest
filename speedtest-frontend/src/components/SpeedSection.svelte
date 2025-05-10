@@ -4,21 +4,21 @@
     export let results: number[] | null;
     export let label: string;
     const keys: string[] = ["Last", "Average", "Peak"];
-    let statsPromise: Promise<Record<string, number | string>>;
+    let statsPromise: Promise<Record<string, number>>;
 
-    async function getAverage(results: number[]): Promise<number | string>  {
+    async function getAverage(results: number[]): Promise<number>  {
         if (results.length === 0) {
-            return "-"
+            return NaN
         }
         const sum = results.reduce((a, b) => a + b, 0)
         return sum / results.length
     }
 
     async function calcStats() {
-        let stats: Record<string, number | string> = {};
+        let stats: Record<string, number> = {};
         stats["Last"] = results[results.length - 1]
         stats["Average"] = await getAverage(results)
-        stats["Peak"] = results.length > 0 ? Math.max(...results) : "-"
+        stats["Peak"] = results.length > 0 ? Math.max(...results) : NaN
 
         return stats
     }
@@ -74,10 +74,10 @@
                 {#await statsPromise}
                     <div class="stat-result"> - </div>
                 {:then stats}
-                    {#if stats.hasOwnProperty(key)}
-                        <div class="stat-result"> {stats[key].toFixed(2)} MB/s </div>
+                    {#if Number.isNaN(stats[key]) || stats[key] === undefined}
+                        <div class="stat-result"> - </div>
                     {:else}
-                        <div class="stat-result"> {stats[key]} - </div>
+                        <div class="stat-result"> {stats[key].toFixed(2)} MB/s </div>
                     {/if}
                 {/await}
             </div>
