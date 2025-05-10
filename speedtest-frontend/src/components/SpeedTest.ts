@@ -2,7 +2,7 @@ import { Api } from "./api";
 
 export class SpeedTest {
     api: Api;
-    payload_size = 10*1024**2; // 1 MB
+    payload_size = 10*1000**2; // 10 MB
 
     constructor(api: Api) {
         this.api = api

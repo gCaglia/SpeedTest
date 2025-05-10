@@ -12,7 +12,7 @@ use serde::Serialize;
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 
-const PAYLOAD_SIZE: usize = 10 * 1024 * 1024; // 10MBs
+const PAYLOAD_SIZE: usize = 10 * 1000 * 1000; // 10MBs
 const REQUEST_BODY_LIMIT: usize = 100 * 1024 * 1024;
 
 #[derive(Serialize)]
