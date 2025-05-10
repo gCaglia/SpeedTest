@@ -23,6 +23,7 @@ export class SpeedTest {
     async download(): Promise<number | null> {
         const start = performance.now();
         const response = await this.api.download();
+        await response.blob()
         const end = performance.now();
         if (response.ok) {
             const payload_size_header = response.headers.get("Content-Length");
