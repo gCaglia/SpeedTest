@@ -10,8 +10,8 @@ export class Api {
         return await fetch(url);
     }
 
-    async download(): Promise<Response> {
-        const url = `${this.endpoint}/download`;
+    async download(size: number): Promise<Response> {
+        const url = `${this.endpoint}/download?size=${size}`;
         return await fetch(url)
     }
 

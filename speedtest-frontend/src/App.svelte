@@ -23,18 +23,23 @@
 
   async function getDownloadSpeed() {
     let results: number[] = [];
-    for (let i = 0; i < numChecks; i++) {
-      results.push(await speedTest.download());
+    let size: number = 100;
+    for (let i = 0; i <= numChecks; i++) {
+      results.push(await speedTest.download(size));
+      // size should be chosen such that each request takes ~500ms / .5s
+      size = Math.round(size * (.5 / results[results.length - 1]));
     }
-    return results
+    return results.slice(1) // Ignore first measurement
   }
 
   async function getUploadSpeed() {
     let results: number[] = [];
-    for (let i = 0; i < numChecks; i++) {
-      results.push(await speedTest.upload());
+    let size: number = 100;
+    for (let i = 0; i <= numChecks; i++) {
+      results.push(await speedTest.upload(size));
+      size = Math.round(size * (.5 / results[results.length - 1]));
     }
-    return results
+    return results.slice(1)
   }
 
   async function runTests() {

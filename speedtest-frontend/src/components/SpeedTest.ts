@@ -2,7 +2,6 @@ import { Api } from "./api";
 
 export class SpeedTest {
     api: Api;
-    payload_size = 10*1000**2; // 10 MB
 
     constructor(api: Api) {
         this.api = api
@@ -20,9 +19,9 @@ export class SpeedTest {
         return null;
     }
 
-    async download(): Promise<number | null> {
+    async download(size: number): Promise<number | null> {
         const start = performance.now();
-        const response = await this.api.download();
+        const response = await this.api.download(size);
         await response.blob()
         const end = performance.now();
         if (response.ok) {
@@ -37,15 +36,15 @@ export class SpeedTest {
         return null;
     }
 
-    async upload(): Promise<number | null> {
-        const empty_payload = new Uint8Array(this.payload_size);
+    async upload(size: number): Promise<number | null> {
+        const empty_payload = new Uint8Array(size);
         const payload = await this.fillPayload(empty_payload);
         const start = performance.now();
         const response = await this.api.upload(payload);
         const end = performance.now();
         if (response.ok) {
             const durationSecs = (end - start) / 1000;
-            const mb_per_second = (this.payload_size / durationSecs) / 1024**2;
+            const mb_per_second = (size / durationSecs) / 1024**2;
             return mb_per_second
         }
         console.log("Error getting response!")
