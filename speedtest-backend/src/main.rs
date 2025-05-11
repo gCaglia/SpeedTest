@@ -1,5 +1,5 @@
 use axum::body::Body;
-use axum::extract::DefaultBodyLimit;
+use axum::extract::{DefaultBodyLimit, Query};
 use axum::http::header;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -8,17 +8,21 @@ use axum::routing::{get, post};
 use axum::{Json, Router};
 use bytes::Bytes;
 use chrono::Utc;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 
-const PAYLOAD_SIZE: usize = 10 * 1000 * 1000; // 10MBs
 const REQUEST_BODY_LIMIT: usize = 100 * 1024 * 1024;
 
 #[derive(Serialize)]
 struct Pong {
     message: String,
     timestamp: u64,
+}
+
+#[derive(Deserialize)]
+struct DownloadParams {
+    size: usize
 }
 
 impl Pong {
@@ -60,12 +64,13 @@ async fn ping_handler() -> Pong {
     return Pong::new();
 }
 
-async fn download_speed_handler() -> Response<Body> {
-    let body: Bytes = Bytes::from(vec![0u8; PAYLOAD_SIZE]);
+async fn download_speed_handler(Query(params): Query<DownloadParams>) -> Response<Body> {
+
+    let body: Bytes = Bytes::from(vec![0u8; params.size]);
 
     Response::builder()
         .status(StatusCode::OK)
-        .header(header::CONTENT_LENGTH, &PAYLOAD_SIZE.to_string())
+        .header(header::CONTENT_LENGTH, params.size.to_string())
         .header(header::CONTENT_TYPE, "application/octet-stream")
         .body(Body::from(body))
         .expect("Failed to build response!")
