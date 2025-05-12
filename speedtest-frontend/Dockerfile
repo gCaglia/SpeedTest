@@ -16,7 +16,6 @@ COPY --chown=frontend-user:frontend-user . .
 
 # Prepare application
 RUN npm install
+RUN npm run build
 
-EXPOSE 5173
-
-CMD ["npm", "run", "dev", "--", "--host=0.0.0.0"]
+CMD ["npx", "serve", "dist", "-l", "tcp://0.0.0.0:8080"]
