@@ -20,9 +20,14 @@ export class SpeedTest {
     }
 
     async download(size: number): Promise<number | null> {
+        let totalBytes = 0;
         const start = performance.now();
         const response = await this.api.download(size);
-        await response.blob()
+        const reader = await response.body.getReader()
+        while (true) {
+            const { done, } = await reader.read()
+            if (done) break;
+        }
         const end = performance.now();
         if (response.ok) {
             const payload_size_header = response.headers.get("Content-Length");

@@ -13,6 +13,8 @@
   let speedTestRunning: boolean = false;
   
   const numChecks: number = 30;
+  const maxPayloadSize: number = 25e6; // 25 MB -> Large enough for fast connections
+  const startPayloadSize: number = 100e3; // 100 KB
 
   async function getPing() {
     let results: number[] = [];
@@ -25,10 +27,10 @@
   async function getDownloadSpeed() {
     let results: number[] = [];
     let result: number;
-    let size: number = 500000;
+    let size: number = startPayloadSize;
     for (let i = 0; i <= numChecks; i++) {
       result = await speedTest.download(size);
-      size = await getNewSize(1, result);
+      size = Math.min(await getNewSize(1, result), maxPayloadSize);
       results.push(result);
     }
     return results.slice(1); // Ignore first measurement
@@ -44,7 +46,7 @@
     let size: number = 100;
     for (let i = 0; i <= numChecks; i++) {
       result = await speedTest.upload(size);
-      size = Math.min(await getNewSize(1, result), 100e6); // Max payload size is 100MB
+      size = Math.min(await getNewSize(1, result), maxPayloadSize); // Max payload size is 100MB
       results.push(result);
     }
     return results.slice(1);
