@@ -10,6 +10,7 @@
   let ping: number[] | null = null;
   let downloadSpeed: number[] | null = null;
   let uploadSpeed: number[] | null = null;
+  let speedTestRunning: boolean = false;
   
   const numChecks: number = 30;
 
@@ -43,12 +44,17 @@
   }
 
   async function runTests() {
-    ping = [];
-    downloadSpeed = [];
-    uploadSpeed = [];
-    ping = await getPing();
-    downloadSpeed = await getDownloadSpeed();
-    uploadSpeed = await getUploadSpeed();
+    speedTestRunning = true;
+    try {
+      ping = [];
+      downloadSpeed = [];
+      uploadSpeed = [];
+      ping = await getPing();
+      downloadSpeed = await getDownloadSpeed();
+      uploadSpeed = await getUploadSpeed();
+    } finally {
+      speedTestRunning = false;
+    }
   }
 
 </script>
@@ -64,8 +70,12 @@
   <div class="results">
     <PingBox bind:results = {ping}></PingBox>
   </div>
-  <button class="test-button" on:click={runTests}>
+  <button class="test-button" on:click={runTests} disabled={speedTestRunning}>
+    {#if speedTestRunning}
+    <span class="spinner"></span> Running...
+    {:else}
     Run Test
+    {/if}
   </button>
 </main>
 
@@ -84,5 +94,22 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+  }
+
+  .spinner {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 </style>
