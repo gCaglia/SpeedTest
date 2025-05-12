@@ -24,14 +24,20 @@
     return results
   }
 
+  async function getMean(numbers: number[]): Promise<number> {
+    if (numbers.length === 0) return NaN;
+    const sum: number = numbers.reduce((a, b) => a + b, 0)
+    return sum / numbers.length;
+  }
+
   async function getDownloadSpeed() {
     let results: number[] = [];
     let result: number;
     let size: number = startPayloadSize;
     for (let i = 0; i <= numChecks; i++) {
       result = await speedTest.download(size);
-      size = Math.min(await getNewSize(1, result), maxPayloadSize);
       results.push(result);
+      size = Math.min(await getNewSize(1, await getMean(results)), maxPayloadSize);
     }
     return results.slice(1); // Ignore first measurement
   }
@@ -46,8 +52,8 @@
     let size: number = 100;
     for (let i = 0; i <= numChecks; i++) {
       result = await speedTest.upload(size);
-      size = Math.min(await getNewSize(1, result), maxPayloadSize); // Max payload size is 100MB
       results.push(result);
+      size = Math.min(await getNewSize(1, await getMean(results)), maxPayloadSize);
     }
     return results.slice(1);
   }
@@ -70,7 +76,7 @@
 
 <main>
   <div class="heading-box">
-    <h1> Welcome to the Private SpeedTest!</h1>
+    <h1>Connection Speed Test</h1>
   </div>
   <div class="results">
     <SpeedSection bind:results = {downloadSpeed} label = "Download Speed (MB/s)"></SpeedSection>
