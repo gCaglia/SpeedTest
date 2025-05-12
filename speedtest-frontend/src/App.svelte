@@ -24,23 +24,30 @@
 
   async function getDownloadSpeed() {
     let results: number[] = [];
-    let size: number = 100;
+    let result: number;
+    let size: number = 500000;
     for (let i = 0; i <= numChecks; i++) {
-      results.push(await speedTest.download(size));
-      // size should be chosen such that each request takes ~500ms / .5s
-      size = Math.round(size * (.5 / results[results.length - 1]));
+      result = await speedTest.download(size);
+      size = await getNewSize(1, result);
+      results.push(result);
     }
-    return results.slice(1) // Ignore first measurement
+    return results.slice(1); // Ignore first measurement
+  }
+
+  async function getNewSize(duration_target: number, velocity_current: number): Promise<number> {
+    return Math.round(duration_target * velocity_current * 1e6) // Convert here MB/s to B/s
   }
 
   async function getUploadSpeed() {
     let results: number[] = [];
+    let result: number;
     let size: number = 100;
     for (let i = 0; i <= numChecks; i++) {
-      results.push(await speedTest.upload(size));
-      size = Math.round(size * (.5 / results[results.length - 1]));
+      result = await speedTest.upload(size);
+      size = Math.min(await getNewSize(1, result), 100e6); // Max payload size is 100MB
+      results.push(result);
     }
-    return results.slice(1)
+    return results.slice(1);
   }
 
   async function runTests() {
