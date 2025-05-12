@@ -72,6 +72,9 @@ async fn download_speed_handler(Query(params): Query<DownloadParams>) -> Respons
         .status(StatusCode::OK)
         .header(header::CONTENT_LENGTH, params.size.to_string())
         .header(header::CONTENT_TYPE, "application/octet-stream")
+        .header(header::CACHE_CONTROL, "no-store, no-cache, must-revalidate, max-age=0")
+        .header(header::PRAGMA, "no-cache")
+        .header(header::EXPIRES, "0")
         .body(Body::from(body))
         .expect("Failed to build response!")
 }
