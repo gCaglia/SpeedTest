@@ -34,7 +34,7 @@ docker-compose up --build
 
 Access the application:
 
-Open your browser and navigate to http://localhost:3000 to use the SpeedTest interface.
+Open your browser and navigate to http://localhost:8080 to use the SpeedTest interface.
 
 ## Project Structure
 
@@ -46,7 +46,7 @@ SpeedTest/
 └── README.md             # Project documentation
 ```
 
-##Contributing
+## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
 License
